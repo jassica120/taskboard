@@ -1,103 +1,112 @@
+// ================ Next.js 頁面組件說明 ================
+//
+// 這是一個 Next.js 的頁面組件，用於實現一個簡單的任務管理板
+//
+// 'use client' 指令的重要性：
+// 1. 表明這是一個客戶端組件，將在瀏覽器中執行
+// 2. 允許使用 useState 等 React Hooks
+// 3. 能夠處理用戶交互（如點擊事件）
+'use client';
+
+// ================ 引入必要的模組 ================
+//
+// Next.js 的圖片優化組件，提供自動圖片優化功能
 import Image from "next/image";
+// React 的 useState Hook，用於管理組件的狀態
+import { useState } from "react";
+// 自定義的任務列表組件
+import TaskList from "../components/TaskList";
 
+// ================ 主頁面組件 ================
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  // -------- 狀態管理 --------
+  // tasks 狀態：
+  // - 用途：儲存所有任務的陣列
+  // - tasks：當前的任務列表
+  // - setTasks：更新任務列表的函數
+  const [tasks, setTasks] = useState([]);
+  
+  // newTask 狀態：
+  // - 用途：管理輸入框的值
+  // - newTask：當前輸入框的內容
+  // - setNewTask：更新輸入框內容的函數
+  const [newTask, setNewTask] = useState('');
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+  // -------- 功能函數 --------
+  // addTask 函數：處理添加新任務的邏輯
+  const addTask = () => {
+    // 除錯用：顯示添加前的任務列表
+    console.log("Before:", tasks);
+    // 除錯用：顯示即將添加的新任務
+    console.log("NewTask:", newTask);
+    
+    // 創建新的任務陣列：
+    // 1. [...tasks]：複製現有的任務列表
+    // 2. newTask：將新任務加入陣列末尾
+    const updatedTasks = [...tasks, newTask];
+    
+    // 更新任務列表狀態
+    setTasks(updatedTasks);
+    // 除錯用：顯示更新後的任務列表
+    console.log("After:" ,updatedTasks);
+    
+    // 清空輸入框，準備下一次輸入
+    setNewTask('');
+  };
+
+  // ================ 渲染用戶界面 ================
+  return (
+    // 主容器：使用 Tailwind CSS 設置內邊距
+    <main className="p-4">
+      {/* 頁面標題 */}
+      <h1 className="text-2xl font-bold">Task Board</h1>
+
+      {/* 輸入區域 */}
+      {/* flex：彈性布局 */}
+      {/* gap-2：元素間距 */}
+      {/* mb-4：下方邊距 */}
+      <div className="flex gap-2 mb-4">
+        {/* 任務輸入框 */}
+        <input
+          // 樣式：邊框、內邊距、佔用剩餘空間
+          className="border p-2 flex-1"
+          // 提示文字
+          placeholder="Enter a task"
+          // 綁定到 newTask 狀態
+          value={newTask}
+          // 當輸入內容改變時，更新 newTask 狀態
+          onChange={(e) => setNewTask(e.target.value)}
+        />
+        {/* 添加按鈕 */}
+        <button
+          // 樣式：藍色背景、白色文字、水平內邊距
+          className="bg-blue-500 text-white px-4"
+          // 點擊時執行 addTask 函數
+          onClick={addTask}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          Add
+        </button>
+      </div>
+
+      {/* 任務列表顯示區域 */}
+      {/* space-y-2：子元素之間的垂直間距 */}
+      <div className="space-y-2">
+        {/* 使用 map 遍歷任務陣列，為每個任務創建列表項 */}
+        {tasks.map((task, index) => (
+          // key：React 需要的唯一標識
+          // border：邊框
+          // p-2：內邊距
+          // rounded：圓角
+          <li key={index} className="border p-2 rounded">
+            {/* 顯示任務內容 */}
+            {task}
+          </li>
+        ))}
+      </div>
+
+      {/* 渲染自定義的任務列表組件 */}
+      {/* 將當前的任務列表傳遞給子組件 */}
+      <TaskList tasks={tasks} />
+    </main>
   );
 }
