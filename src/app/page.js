@@ -9,11 +9,11 @@
 'use client';
 
 // ================ 引入必要的模組 ================
-//
+// React 的圖片組件，用於優化圖片加載
 // Next.js 的圖片優化組件，提供自動圖片優化功能
-import Image from "next/image";
+import Link from "next/link";
 // React 的 useState Hook，用於管理組件的狀態
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // 自定義的任務列表組件
 import TaskList from "../components/TaskList";
 
@@ -31,6 +31,14 @@ export default function Home() {
   // - newTask：當前輸入框的內容
   // - setNewTask：更新輸入框內容的函數
   const [newTask, setNewTask] = useState('');
+  const [nextId, setNextId] = useState(1);
+
+  useEffect(() => {
+    const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    setTasks(savedTasks);
+    const maxId = savedTasks.reduce((max, task) => Math.max(max, task.id), 0);
+    setNextId(maxId + 1);
+  },[]);
 
   // -------- 功能函數 --------
   // addTask 函數：處理添加新任務的邏輯
@@ -40,10 +48,17 @@ export default function Home() {
     // 除錯用：顯示即將添加的新任務
     console.log("NewTask:", newTask);
     
+
+    const newTaskObj = {
+      id: nextId,
+      title: newTask,
+      description: '',
+    };
+
     // 創建新的任務陣列：
     // 1. [...tasks]：複製現有的任務列表
     // 2. newTask：將新任務加入陣列末尾
-    const updatedTasks = [...tasks, newTask];
+    const updatedTasks = [...tasks, newTaskObj];
     
     // 更新任務列表狀態
     setTasks(updatedTasks);
@@ -52,12 +67,24 @@ export default function Home() {
     
     // 清空輸入框，準備下一次輸入
     setNewTask('');
+
+
+    setNextId(nextId + 1);
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
   };
 
   // ================ 渲染用戶界面 ================
+  const handleDelete = (index) => {
+      // 使用 filter 方法過濾掉被刪除的任務
+      const newTasks = tasks.filter((_, i) => i !== index);
+      // 更新狀態
+      setTasks(newTasks);
+      localStorage.setItem('tasks', JSON.stringify(newTasks));
+  }
+
   return (
     // 主容器：使用 Tailwind CSS 設置內邊距
-    <main className="p-4">
+    <main className="p-4 max-w-md mx-auto">
       {/* 頁面標題 */}
       <h1 className="text-2xl font-bold">Task Board</h1>
 
@@ -88,25 +115,9 @@ export default function Home() {
         </button>
       </div>
 
-      {/* 任務列表顯示區域 */}
-      {/* space-y-2：子元素之間的垂直間距 */}
-      <div className="space-y-2">
-        {/* 使用 map 遍歷任務陣列，為每個任務創建列表項 */}
-        {tasks.map((task, index) => (
-          // key：React 需要的唯一標識
-          // border：邊框
-          // p-2：內邊距
-          // rounded：圓角
-          <li key={index} className="border p-2 rounded">
-            {/* 顯示任務內容 */}
-            {task}
-          </li>
-        ))}
-      </div>
-
       {/* 渲染自定義的任務列表組件 */}
       {/* 將當前的任務列表傳遞給子組件 */}
-      <TaskList tasks={tasks} />
+      <TaskList tasks={tasks} onDelete={handleDelete}/>
     </main>
   );
 }
