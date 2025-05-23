@@ -1,12 +1,12 @@
 'use client';
 
 import {useRouter} from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'; 
 
 export default function TaskDetail({params}) {
     const router = useRouter();
     const { id } = params;
-    const [title, useTitle] = useState('');
+    const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
 
     const handleSave = () => {

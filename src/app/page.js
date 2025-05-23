@@ -74,9 +74,9 @@ export default function Home() {
   };
 
   // ================ 渲染用戶界面 ================
-  const handleDelete = (index) => {
+  const handleDelete = (id) => { // 處理刪除任務的邏輯
       // 使用 filter 方法過濾掉被刪除的任務
-      const newTasks = tasks.filter((_, i) => i !== index);
+      const newTasks = tasks.filter((task) => task.id !== id); //!==後的id為delete的id(兩個id不同)
       // 更新狀態
       setTasks(newTasks);
       localStorage.setItem('tasks', JSON.stringify(newTasks));
